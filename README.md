@@ -44,6 +44,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+**注意**: 如果在安装过程中遇到缺少某些依赖的问题，`requirements.txt` 已包含所有必需的包：
+- `livekit-agents>=1.2.9` - LiveKit Agents 核心框架
+- `livekit-plugins-aliyun>=1.2.9` - 阿里云插件
+- `httpx` - HTTP 客户端（阿里云插件依赖）
+- `openai` - OpenAI SDK（阿里云插件依赖）
+- `python-dotenv` - 环境变量管理
+
 ### 4. 配置环境变量
 
 复制环境变量模板并填写配置：
@@ -66,14 +73,27 @@ LIVEKIT_API_SECRET=your_api_secret
 
 ### 5. 运行服务
 
+**开发模式（推荐，支持热重载）：**
+
 ```bash
-python agent.py
+source venv/bin/activate  # 激活虚拟环境
+python agent.py dev
 ```
 
-或使用开发模式（自动重载）：
+**生产模式：**
 
 ```bash
-python agent.py dev
+source venv/bin/activate  # 激活虚拟环境
+python agent.py start
+```
+
+**其他可用命令：**
+
+```bash
+python agent.py --help          # 查看所有可用命令
+python agent.py console         # 在控制台中启动对话
+python agent.py connect         # 连接到特定房间
+python agent.py download-files  # 下载插件依赖文件
 ```
 
 ## 🔑 获取 API 密钥
@@ -97,7 +117,20 @@ python agent.py dev
 
 **选项 2: 自建 LiveKit 服务器**
 
-参考 [LiveKit 官方文档](https://docs.livekit.io/home/self-hosting/local/) 自建服务器。
+本地开发可以快速启动 LiveKit 服务器：
+
+```bash
+# 使用 Docker 运行 LiveKit 服务器
+docker run --rm -p 7880:7880 \
+  -p 7881:7881 \
+  -p 7882:7882/udp \
+  -v $PWD/livekit.yaml:/livekit.yaml \
+  livekit/livekit-server \
+  --config /livekit.yaml \
+  --node-ip=127.0.0.1
+```
+
+或参考 [LiveKit 官方文档](https://docs.livekit.io/home/self-hosting/local/) 了解更多部署方式。
 
 ## ⚙️ 配置说明
 
@@ -197,18 +230,31 @@ logging.basicConfig(
 
 ## 🐛 故障排除
 
-### 问题 1: 导入错误
+### 问题 1: 缺少依赖模块
 
-**错误**: `ModuleNotFoundError: No module named 'livekit'`
+**错误**: `ModuleNotFoundError: No module named 'httpx'` 或 `No module named 'openai'`
 
-**解决**: 确保已激活虚拟环境并安装了所有依赖：
-
+**解决**: 
 ```bash
-source venv/bin/activate  # 激活虚拟环境
+source venv/bin/activate
+pip install httpx openai  # 安装缺失的依赖
+# 或重新安装所有依赖
 pip install -r requirements.txt
 ```
 
-### 问题 2: API 密钥错误
+### 问题 2: 虚拟环境未激活
+
+**错误**: `ModuleNotFoundError: No module named 'livekit'`
+
+**解决**: 确保在运行前激活虚拟环境：
+
+```bash
+source venv/bin/activate  # macOS/Linux
+# 或
+venv\Scripts\activate     # Windows
+```
+
+### 问题 3: API 密钥错误
 
 **错误**: 认证失败或 API 调用错误
 
@@ -217,21 +263,52 @@ pip install -r requirements.txt
 2. 确认 API 密钥是否有效且未过期
 3. 检查阿里云账户是否有足够的额度
 
-### 问题 3: LiveKit 连接失败
+### 问题 4: LiveKit 连接失败
 
 **错误**: 无法连接到 LiveKit 服务器
 
 **解决**:
 1. 检查 `LIVEKIT_URL` 是否正确（注意 `ws://` 或 `wss://` 前缀）
-2. 确认 LiveKit 服务器是否正在运行
-3. 检查网络连接和防火墙设置
+2. 如使用本地服务器，确认 LiveKit 服务器是否在运行（默认 `ws://localhost:7880`）
+3. 如使用 LiveKit Cloud，验证 API Key 和 Secret 是否正确
+4. 检查网络连接和防火墙设置
+
+### 问题 5: 命令行参数错误
+
+**错误**: `Usage: agent.py [OPTIONS] COMMAND [ARGS]...`
+
+**解决**: LiveKit Agent 需要指定子命令，不能直接运行 `python agent.py`，请使用：
+```bash
+python agent.py dev    # 开发模式
+python agent.py start  # 生产模式
+```
 
 ## 📚 相关资源
 
 - [LiveKit Agents 文档](https://docs.livekit.io/agents/)
+- [LiveKit Agents Python SDK](https://github.com/livekit/agents)
 - [阿里云 DashScope 文档](https://help.aliyun.com/zh/dashscope/)
-- [livekit-plugins-aliyun GitHub](https://github.com/livekit/livekit-plugins-volcengine)
+- [livekit-plugins-aliyun 插件](https://www.piwheels.org/project/livekit-plugins-aliyun/)
 - [LiveKit Cloud](https://cloud.livekit.io/)
+- [LiveKit 自建服务器指南](https://docs.livekit.io/home/self-hosting/local/)
+
+## 💡 使用提示
+
+1. **开发模式 vs 生产模式**：
+   - 开发模式 (`dev`) 会监控文件变化并自动重载，适合调试
+   - 生产模式 (`start`) 适合正式运行，性能更优
+
+2. **环境变量管理**：
+   - 永远不要提交 `.env` 文件到 Git
+   - 使用 `.env.example` 作为模板分享配置结构
+
+3. **API 额度**：
+   - 注意监控阿里云 DashScope API 的使用额度
+   - 建议在开发环境设置请求限制
+
+4. **调试技巧**：
+   - 将日志级别设为 `DEBUG` 可查看更详细的运行信息
+   - 使用 `python agent.py console` 在终端直接测试对话功能
 
 ## 📄 许可证
 

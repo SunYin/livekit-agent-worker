@@ -4,6 +4,10 @@ livekit-agents>=1.2.9
 # 阿里云插件
 livekit-plugins-aliyun>=1.2.9
 
+# 阿里云插件依赖
+httpx
+openai
+
 # 环境变量管理
 python-dotenv
 
