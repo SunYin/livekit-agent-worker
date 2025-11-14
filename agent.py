@@ -64,7 +64,7 @@ async def entrypoint(ctx: JobContext):
         # 语音合成 (TTS) - 使用阿里云 CosyVoice 语音合成
         tts=aliyun.TTS(
             model="cosyvoice-v2",       # CosyVoice v2 模型
-            voice="longcheng_v2",       # 语音类型：龙城
+            voice="longanrou",       # 语音类型：龙城
             speech_rate=1.0,            # 语速：1.0 为正常速度 (0.5-2.0)
             # 注意：当前版本的 aliyun.TTS 不支持 pitch_rate 和 volume 参数
         ),
