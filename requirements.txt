@@ -1,0 +1,11 @@
+# LiveKit Agent 核心依赖
+livekit-agents>=1.2.9
+
+# 阿里云插件
+livekit-plugins-aliyun>=1.2.9
+
+# 环境变量管理
+python-dotenv
+
+# 可选：如果需要使用 VAD (Voice Activity Detection)
+# livekit-plugins-silero
