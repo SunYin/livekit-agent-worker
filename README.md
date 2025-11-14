@@ -168,20 +168,32 @@ tts=aliyun.TTS(
     model="cosyvoice-v2",       # 模型: cosyvoice-v2, sambert-zhichu 等
     voice="longcheng_v2",       # 语音类型
     speech_rate=1.0,            # 语速: 0.5-2.0
-    pitch_rate=1.0,             # 音调: 0.5-2.0
-    volume=50,                  # 音量: 0-100
+    # 注意：当前版本不支持 pitch_rate 和 volume 参数
 )
 ```
+
+**可用模型**：
+- `cosyvoice-v2` - CosyVoice v2 模型（推荐）
+- `sambert-zhichu` - 智谱系列模型
+
+**可用语音类型**（voice）：
+- `longcheng_v2` - 龙城语音
+- 更多语音类型请参考阿里云文档
 
 #### LLM (大语言模型)
 
 ```python
 llm=aliyun.LLM(
     model="qwen-plus",          # 模型: qwen-plus, qwen-max, qwen-turbo
-    temperature=0.7,            # 温度: 0.0-2.0 (越高越随机)
-    max_tokens=2000,            # 最大 token 数
+    # 注意：当前版本不支持 temperature 和 max_tokens 参数
+    # 这些参数由模型默认配置决定
 )
 ```
+
+**可用模型**：
+- `qwen-plus` - Qwen Plus 模型（推荐，平衡性能和成本）
+- `qwen-max` - Qwen Max 模型（最强性能）
+- `qwen-turbo` - Qwen Turbo 模型（最快速度）
 
 ## 📁 项目结构
 

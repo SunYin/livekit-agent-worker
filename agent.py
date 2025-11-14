@@ -66,15 +66,14 @@ async def entrypoint(ctx: JobContext):
             model="cosyvoice-v2",       # CosyVoice v2 模型
             voice="longcheng_v2",       # 语音类型：龙城
             speech_rate=1.0,            # 语速：1.0 为正常速度 (0.5-2.0)
-            pitch_rate=1.0,             # 音调：1.0 为正常音调 (0.5-2.0)
-            volume=50,                  # 音量：50 为中等音量 (0-100)
+            # 注意：当前版本的 aliyun.TTS 不支持 pitch_rate 和 volume 参数
         ),
         
         # 大语言模型 (LLM) - 使用阿里云 Qwen 系列模型
         llm=aliyun.LLM(
             model="qwen-plus",          # Qwen Plus 模型（可选：qwen-max, qwen-turbo）
-            temperature=0.7,            # 温度：控制回复的随机性 (0.0-2.0)
-            max_tokens=2000,            # 最大 token 数：限制单次回复长度
+            # 注意：当前版本的 aliyun.LLM 不支持 temperature 和 max_tokens 参数
+            # 这些参数可能需要通过其他方式配置
         ),
     )
     
